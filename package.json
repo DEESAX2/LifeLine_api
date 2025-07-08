@@ -1,0 +1,37 @@
+{
+  "name": "lifeline_api",
+  "version": "1.0.0",
+  "description": "this is a blood donation API ( this application is supposed to connect potential blood donors to various hospitals of their choice to donate blood)",
+  "main": "index.js",
+  "type": "module",
+
+  "scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "dev": "nodemon index.js",
+  "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DEESAX2/LineLine_api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DEESAX2/LineLine_api/issues"
+  },
+  "homepage": "https://github.com/DEESAX2/LineLine_api#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.1",
+    "normalize-mongoose": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
