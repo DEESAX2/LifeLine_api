@@ -1,5 +1,6 @@
 import { Appointment } from '../models/appointment_model.js';
 import { BloodRequest } from '../models/bloodRequest_model.js';
+import { bloodRequestSchema } from '../schema/bloodRequest_schema';
 
 // Get all appointments for a hospital
 export const getAppointments = async (req, res) => {
@@ -15,18 +16,27 @@ export const getAppointments = async (req, res) => {
 // Create a blood request
 export const createBloodRequest = async (req, res) => {
   try {
-    const { bloodType, urgency, message } = req.body;
+    const { bloodType, urgency, message, quantity, date } = req.body;
+
+    // ✅ Joi validation
+    const { error } = bloodRequestSchema.validate({ bloodType, urgency, message, quantity, date });
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
     const request = await BloodRequest.create({
       hospital: req.user.id,
       bloodType,
       urgency,
-      message
+      message,
+      quantity,
+      date
     });
+
     res.status(201).json(request);
   } catch (error) {
     res.status(500).json({ message: 'Failed to create blood request', error: error.message });
   }
 };
+
 
 // Search donors by name, age, or blood type
 export const searchDonors = async (req, res) => {
