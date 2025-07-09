@@ -140,3 +140,4 @@ vite.config.ts.timestamp-*
 .env
 node_modules
 package-lock.json
+utils/hash.js

@@ -42,8 +42,8 @@ export const loginHospital = async (req, res) => {
     const { email, password } = req.body;
     const hospital = await Hospital.findOne({ email });
 
-    if (!hospital || !hospital.isApproved) {
-      return res.status(403).json({ message: 'Incorrect credentials or pending approval' });
+    if (!hospital )  {
+      return res.status(403).json({ message: 'Incorrect credentials' });
     }
 
     if (hospital.status === 'declined') {
@@ -52,9 +52,15 @@ export const loginHospital = async (req, res) => {
       });
     }
 
+    if (!hospital.isApproved){
+        return res.status(403).json({
+            message: 'This hospital is pending approval.'
+        })
+    }
+
     const isMatch = await bcrypt.compare(password, hospital.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Incorrect credentials or pending approval' });
+      return res.status(401).json({ message: 'Incorrect credentials' });
     }
 
     const token = jwt.sign({ id: hospital.id, role: hospital.role }, secret, { expiresIn: '1d' });

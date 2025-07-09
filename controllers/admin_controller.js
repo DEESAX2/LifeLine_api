@@ -3,7 +3,7 @@ import { Hospital } from '../models/hospital_model.js';
 // GET all pending hospitals
 export const getPendingHospitals = async (req, res) => {
   try {
-    const hospitals = await Hospital.find({ isApproved: false });
+    const hospitals = await Hospital.find({ isApproved: false }).select('-password');
     res.status(200).json(hospitals);
   } catch (error) {
     res.status(500).json({ message: 'Failed to get pending hospitals', error: error.message });
@@ -18,7 +18,7 @@ export const approveHospital = async (req, res) => {
       hospitalId,
       { isApproved: true, status: 'approved' },
       { new: true }
-    );
+    ).select('-password');
     if (!hospital) {
       return res.status(404).json({ message: 'Hospital not found' });
     }
@@ -31,7 +31,7 @@ export const approveHospital = async (req, res) => {
 // Decline hospital 
 export const declineHospital = async (req, res) => {
   try {
-    const hospital = await Hospital.findById(req.params.hospitalId);
+    const hospital = await Hospital.findById(req.params.hospitalId).select('-password');
     if (!hospital) {
       return res.status(404).json({ message: 'Hospital not found' });
     }
