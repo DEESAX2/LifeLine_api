@@ -46,3 +46,19 @@ export const declineHospital = async (req, res) => {
   }
 };
 
+// Admin dashboard summary
+export const getAdminDashboardStats = async (req, res) => {
+  try {
+    const pendingCount = await Hospital.countDocuments({ status: 'pending' });
+    const approvedCount = await Hospital.countDocuments({ status: 'approved' });
+    const declinedCount = await Hospital.countDocuments({ status: 'declined' });
+
+    res.status(200).json({
+      pending: pendingCount,
+      approved: approvedCount,
+      declined: declinedCount
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch dashboard data', error: error.message });
+  }
+};
