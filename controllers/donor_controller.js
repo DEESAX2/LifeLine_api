@@ -41,6 +41,45 @@ export const createAppointment = async (req, res) => {
   }
 };
 
+
+//  Book appointment in response to a specific blood request
+export const createAppointmentFromRequest = async (req, res) => {
+  try {
+    const { fullName, age, bloodType, phone, email, date, message } = req.body;
+    const { requestId } = req.params;
+
+    // Validate donor input
+    const { error } = donorSchema.validate({ fullName, age, bloodType, phone, email });
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    // Find the blood request
+    const bloodRequest = await BloodRequest.findById(requestId);
+    if (!bloodRequest) {
+      return res.status(404).json({ message: 'Blood request not found' });
+    }
+
+    // Create donor
+    const donor = new Donor({ fullName, age, bloodType, phone, email });
+    await donor.save();
+
+    // Create appointment linked to blood request's hospital
+    const appointment = new Appointment({
+      hospital: bloodRequest.hospital,
+      donor: donor.id,
+      date,
+      message
+    });
+    await appointment.save();
+
+    donor.appointment = appointment.id;
+    await donor.save();
+
+    res.status(201).json({ message: 'Appointment booked for this blood request', donor, appointment });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to book appointment from request', error: error.message });
+  }
+};
+
 export const viewBloodRequests = async (req, res) => {
   try {
     const { bloodType, urgency, page = 1, limit = 10 } = req.query;
@@ -65,5 +104,19 @@ export const viewBloodRequests = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch blood requests', error: error.message });
+  }
+};
+
+// getting a single blood request 
+export const getSingleBloodRequest = async (req, res) => {
+  try {
+    const request = await BloodRequest.findById(req.params.id).populate('hospital', 'name location');
+    if (!request) {
+      return res.status(404).json({ message: 'Blood request not found' });
+    }
+
+    res.status(200).json(request);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve blood request', error: error.message });
   }
 };

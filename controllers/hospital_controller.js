@@ -6,7 +6,7 @@ import { bloodRequestSchema } from '../schema/bloodRequest_schema';
 export const getAppointments = async (req, res) => {
   try {
     const hospitalId = req.user.id;
-    const appointments = await Appointment.find({ hospital: hospitalId }).populate('donor');
+    const appointments = await Appointment.find({ hospital: hospitalId, hasDonated: false }).populate('donor');
     res.json(appointments);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch appointments', error: error.message });
@@ -116,7 +116,7 @@ export const getHospitalDashboardStats = async (req, res) => {
 
     const pendingApproved = await Appointment.countDocuments({
       hospital: hospitalId,
-      status: 'approved',
+    //   status: 'approved',
       hasDonated: false
     });
 

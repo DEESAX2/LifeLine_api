@@ -7,11 +7,11 @@ const appointmentSchema = new Schema({
   donor: { 
     type: Schema.Types.ObjectId, ref: 'Donor' },
   date: Date,
-  status: {
-    type: String,
-    enum: ['pending', 'approved', 'rejected'],
-    default: 'pending'
-  },
+//   status: {
+//     type: String,
+//     enum: ['pending', 'approved', 'rejected'],
+//     default: 'pending'
+//   },
   hasDonated: {
     type: Boolean,
     default: false},
