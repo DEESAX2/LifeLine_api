@@ -3,7 +3,7 @@ import { Appointment } from '../models/appointment_model.js';
 import { BloodRequest } from '../models/bloodRequest_model.js';
 import { donorSchema } from '../schema/donor_schema.js';
 import { appointmentSchema } from '../schema/appointment_schema.js';
-
+import { Hospital } from '../models/hospital_model.js';
 export const createAppointment = async (req, res) => {
   try {
     const { fullName, age, bloodType, phone, email, date, hospitalId, message } = req.body;
@@ -74,7 +74,11 @@ export const createAppointmentFromRequest = async (req, res) => {
     donor.appointment = appointment.id;
     await donor.save();
 
-    res.status(201).json({ message: 'Appointment booked for this blood request', donor, appointment });
+    // Populate hospital details
+const populatedAppointment = await Appointment.findById(appointment.id)
+  .populate('hospital', 'name location email');
+
+    res.status(201).json({ message: 'Appointment booked for this blood request', donor, appointment: populatedAppointment });
   } catch (error) {
     res.status(500).json({ message: 'Failed to book appointment from request', error: error.message });
   }
@@ -118,5 +122,19 @@ export const getSingleBloodRequest = async (req, res) => {
     res.status(200).json(request);
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve blood request', error: error.message });
+  }
+};
+// this is to get only approved hospitals in the system by donor to book appointment 
+export const getApprovedHospitals = async (req, res) => {
+  try {
+    const hospitals = await Hospital.find({
+      isApproved: true,
+      status: 'approved',
+      role:'hospital'
+    }).select('name location email phone');
+
+    res.status(200).json(hospitals);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch approved hospitals', error: error.message });
   }
 };
