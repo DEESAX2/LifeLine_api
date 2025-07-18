@@ -157,3 +157,41 @@ export const getHospitalBloodRequests = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch blood requests', error: error.message });
   }
 };
+export const deleteBloodRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const hospitalId = req.user.id; // assuming you're using auth middleware to set req.user
+
+    const request = await BloodRequest.findById(id);
+
+    if (!request) {
+      return res.status(404).json({ message: 'Blood request not found' });
+    }
+
+    if (request.hospital.toString() !== hospitalId) {
+      return res.status(403).json({ message: 'Unauthorized: You can only delete your own requests' });
+    }
+
+    await BloodRequest.findByIdAndDelete(id);
+
+    res.status(200).json({ message: 'Blood request deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete blood request', error: error.message });
+  }
+};
+
+// Get a single blood request by ID
+export const getSingleBloodRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const request = await BloodRequest.findById(id).populate('hospital', 'name location email');
+    if (!request) {
+      return res.status(404).json({ message: 'Blood request not found' });
+    }
+
+    res.status(200).json(request);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch blood request', error: error.message });
+  }
+};

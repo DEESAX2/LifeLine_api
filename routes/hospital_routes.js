@@ -7,7 +7,9 @@ import {
   getSingleHospitalDonor,
   getHospitalDashboardStats,
   markAppointmentAsDonated,
-  getHospitalBloodRequests
+  getHospitalBloodRequests,
+  deleteBloodRequest,
+  getSingleBloodRequest
 } from "../controllers/hospital_controller.js";
 
 import { protect } from "../middleware/auth.js";
@@ -27,6 +29,8 @@ hospitalRouter.get('/donors/:donorId', protect,checkRole('hospital'), getSingleH
 // Blood requests
 hospitalRouter.post('/requests', protect, checkRole('hospital'), createBloodRequest);
 hospitalRouter.get('/blood-requests', protect, checkRole('hospital'), getHospitalBloodRequests);
+hospitalRouter.delete('/delete/blood-requests/:id', protect, checkRole('hospital'), deleteBloodRequest);
+hospitalRouter.get('/blood-requests/:id', protect, checkRole('hospital'), getSingleBloodRequest);
 
 // Dashboard
 hospitalRouter.get('/dashboard/stats', protect, checkRole('hospital'), getHospitalDashboardStats);

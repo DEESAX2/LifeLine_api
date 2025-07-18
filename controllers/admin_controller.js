@@ -49,9 +49,9 @@ export const declineHospital = async (req, res) => {
 // Admin dashboard summary
 export const getAdminDashboardStats = async (req, res) => {
   try {
-    const pendingCount = await Hospital.countDocuments({ status: 'pending' });
-    const approvedCount = await Hospital.countDocuments({ status: 'approved' });
-    const declinedCount = await Hospital.countDocuments({ status: 'declined' });
+    const pendingCount = await Hospital.countDocuments({ status: 'pending' , role: 'hospital'});
+    const approvedCount = await Hospital.countDocuments({ status: 'approved',role: 'hospital' });
+    const declinedCount = await Hospital.countDocuments({ status: 'declined', role: 'hospital'});
 
     res.status(200).json({
       pending: pendingCount,
@@ -62,3 +62,31 @@ export const getAdminDashboardStats = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch dashboard data', error: error.message });
   }
 };
+// Get all approved hospitals (excluding admin)
+export const getApprovedHospitals = async (req, res) => {
+  try {
+    const approvedHospitals = await Hospital.find({
+      status: 'approved',
+      role: 'hospital'
+    }).select('-password');
+
+    res.status(200).json(approvedHospitals);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to get approved hospitals', error: error.message });
+  }
+};
+
+// Get all declined hospitals (excluding admin)
+export const getDeclinedHospitals = async (req, res) => {
+  try {
+    const declinedHospitals = await Hospital.find({
+      status: 'declined',
+      role: 'hospital'
+    }).select('-password');
+
+    res.status(200).json(declinedHospitals);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to get declined hospitals', error: error.message });
+  }
+};
+
