@@ -132,17 +132,23 @@ export const getHospitalDashboardStats = async (req, res) => {
 // Mark appointment as donated
 export const markAppointmentAsDonated = async (req, res) => {
   try {
-    const appointment = await Appointment.findByIdAndUpdate(
+    const appointment = await Appointment.findById(req.params.id);
+     if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+// Check if the appointment belongs to the logged-in hospital
+    if (appointment.hospital !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied: You do not own this appointment' });
+    }
+
+    const updatedappointment = await Appointment.findByIdAndUpdate(
       req.params.id,
       { hasDonated: true },
       { new: true }
     ).populate('donor');
     
-    if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
-    }
 
-    res.json({ message: 'Appointment marked as donated', appointment });
+    res.json({ message: 'Appointment marked as donated', appointment: updatedappointment });
   } catch (error) {
     res.status(500).json({ message: 'Failed to update donation status', error: error.message });
   }
