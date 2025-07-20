@@ -137,7 +137,7 @@ export const markAppointmentAsDonated = async (req, res) => {
       return res.status(404).json({ message: 'Appointment not found' });
     }
 // Check if the appointment belongs to the logged-in hospital
-    if (appointment.hospital !== req.user.id) {
+    if (appointment.hospital.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Access denied: You do not own this appointment' });
     }
 
@@ -166,7 +166,7 @@ export const getHospitalBloodRequests = async (req, res) => {
 export const deleteBloodRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    const hospitalId = req.user.id; // assuming you're using auth middleware to set req.user
+    const hospitalId = req.user.id; 
 
     const request = await BloodRequest.findById(id);
 
@@ -197,11 +197,11 @@ export const getSingleBloodRequest = async (req, res) => {
     }
     
     // Ensure only the hospital that created the request can access it
-    if (BloodRequest.hospital !== req.user.id) {
+    if (request.hospital.id.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Access denied. Not your blood request.' });
     }
 
-    res.status(200).json(BloodRequest);
+    res.status(200).json(request);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch blood request', error: error.message });
   }
