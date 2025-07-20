@@ -18,7 +18,7 @@ export const createBloodRequest = async (req, res) => {
   try {
     const { bloodType, urgency, message, quantity, date } = req.body;
 
-    // ✅ Joi validation
+    // Joi validation
     const { error } = bloodRequestSchema.validate({ bloodType, urgency, message, quantity, date });
     if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -189,8 +189,13 @@ export const getSingleBloodRequest = async (req, res) => {
     if (!request) {
       return res.status(404).json({ message: 'Blood request not found' });
     }
+    
+    // Ensure only the hospital that created the request can access it
+    if (BloodRequest.hospital !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied. Not your blood request.' });
+    }
 
-    res.status(200).json(request);
+    res.status(200).json(BloodRequest);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch blood request', error: error.message });
   }
