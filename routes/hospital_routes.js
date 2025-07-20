@@ -12,25 +12,25 @@ import {
   getSingleBloodRequest
 } from "../controllers/hospital_controller.js";
 
-import { protect } from "../middleware/auth.js";
+import { protect, checkHospitalApproval } from "../middleware/auth.js";
 import { checkRole } from "../utils/roles.js";
 
 export const hospitalRouter = Router();
 
 // Appointment-related
-hospitalRouter.get('/appointments', protect, checkRole('hospital'), getAppointments);
-hospitalRouter.patch('/appointments/:id/donated', protect, checkRole('hospital',), markAppointmentAsDonated);
+hospitalRouter.get('/appointments', protect, checkRole('hospital'), checkHospitalApproval, getAppointments);
+hospitalRouter.patch('/appointments/:id/donated', protect, checkRole('hospital'), checkHospitalApproval, markAppointmentAsDonated);
 
 // Donor-related
-hospitalRouter.get('/donors/filter', protect, checkRole('hospital'), searchDonors);
-hospitalRouter.get('/donors', protect, checkRole('hospital'), getDonorList);
-hospitalRouter.get('/donors/:donorId', protect,checkRole('hospital'), getSingleHospitalDonor);
+hospitalRouter.get('/donors/filter', protect, checkRole('hospital'), checkHospitalApproval, searchDonors);
+hospitalRouter.get('/donors', protect, checkRole('hospital'), checkHospitalApproval, getDonorList);
+hospitalRouter.get('/donors/:donorId', protect,checkRole('hospital'),checkHospitalApproval, getSingleHospitalDonor);
 
 // Blood requests
-hospitalRouter.post('/requests', protect, checkRole('hospital'), createBloodRequest);
-hospitalRouter.get('/blood-requests', protect, checkRole('hospital'), getHospitalBloodRequests);
-hospitalRouter.delete('/delete/blood-requests/:id', protect, checkRole('hospital'), deleteBloodRequest);
-hospitalRouter.get('/blood-requests/:id', protect, checkRole('hospital'), getSingleBloodRequest);
+hospitalRouter.post('/requests', protect, checkRole('hospital'), checkHospitalApproval, createBloodRequest);
+hospitalRouter.get('/blood-requests', protect, checkRole('hospital'), checkHospitalApproval, getHospitalBloodRequests);
+hospitalRouter.delete('/delete/blood-requests/:id', protect, checkRole('hospital'), checkHospitalApproval, deleteBloodRequest);
+hospitalRouter.get('/blood-requests/:id', protect, checkRole('hospital'), checkHospitalApproval, getSingleBloodRequest);
 
 // Dashboard
 hospitalRouter.get('/dashboard/stats', protect, checkRole('hospital'), getHospitalDashboardStats);

@@ -13,3 +13,12 @@ export const protect = (req, res, next) => {
     res.status(403).json({ message: 'Invalid token' });
   }
 };
+// middleware to restrict unapproved hospitals
+export const checkHospitalApproval = (req, res, next) => {
+  if (req.user.role === 'hospital' && !req.user.isApproved) {
+    return res.status(403).json({
+      message: 'Your hospital account has not been approved yet. Please contact our team for more information.'
+    });
+  }
+  next();
+};
