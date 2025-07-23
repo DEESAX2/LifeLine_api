@@ -1,6 +1,7 @@
 import { Appointment } from '../models/appointment_model.js';
 import { BloodRequest } from '../models/bloodRequest_model.js';
 import { bloodRequestSchema } from '../schema/bloodRequest_schema';
+import { Hospital } from '../models/hospital_model.js';
 
 // Get all appointments for a hospital
 export const getAppointments = async (req, res) => {
@@ -120,9 +121,14 @@ export const getHospitalDashboardStats = async (req, res) => {
       hasDonated: false
     });
 
+    // Count total blood requests made by a hospital
+    const totalBloodRequests = await BloodRequest.countDocuments({
+      hospital: hospitalId
+    });
     res.json({
       totalDonors: totalDonated,
-      pendingAppointments: pendingApproved
+      pendingAppointments: pendingApproved,
+      totalBloodRequests: totalBloodRequests
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch dashboard stats', error: error.message });
@@ -204,5 +210,22 @@ export const getSingleBloodRequest = async (req, res) => {
     res.status(200).json(request);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch blood request', error: error.message });
+  }
+};
+
+// Get the logged-in hospital's profile
+export const getHospitalProfile = async (req, res) => {
+  try {
+    const hospitalId = req.user.id;
+
+    const hospital = await Hospital.findById(hospitalId).select('name');
+    
+    if (!hospital) {
+      return res.status(404).json({ message: 'Hospital not found' });
+    }
+
+    res.status(200).json(hospital);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch hospital profile', error: error.message });
   }
 };

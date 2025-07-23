@@ -9,7 +9,8 @@ import {
   markAppointmentAsDonated,
   getHospitalBloodRequests,
   deleteBloodRequest,
-  getSingleBloodRequest
+  getSingleBloodRequest,
+  getHospitalProfile
 } from "../controllers/hospital_controller.js";
 
 import { protect, checkHospitalApproval } from "../middleware/auth.js";
@@ -34,3 +35,5 @@ hospitalRouter.get('/blood-requests/:id', protect, checkRole('hospital'), checkH
 
 // Dashboard
 hospitalRouter.get('/dashboard/stats', protect, checkRole('hospital'), getHospitalDashboardStats);
+// hospital profile
+hospitalRouter.get('/profile', protect,checkRole('hospital'), getHospitalProfile);

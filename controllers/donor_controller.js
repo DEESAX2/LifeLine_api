@@ -66,6 +66,7 @@ export const createAppointmentFromRequest = async (req, res) => {
     const appointment = new Appointment({
       hospital: bloodRequest.hospital,
       donor: donor.id,
+      bloodRequest: bloodRequest.id,
       date,
       message
     });
@@ -76,7 +77,8 @@ export const createAppointmentFromRequest = async (req, res) => {
 
     // Populate hospital details
 const populatedAppointment = await Appointment.findById(appointment.id)
-  .populate('hospital', 'name location email');
+  .populate('hospital', 'name location email')
+  .populate('bloodRequest');
 
     res.status(201).json({ message: 'Appointment booked for this blood request', donor, appointment: populatedAppointment });
   } catch (error) {

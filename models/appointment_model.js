@@ -6,6 +6,10 @@ const appointmentSchema = new Schema({
     type: Schema.Types.ObjectId, ref: 'Hospital' },
   donor: { 
     type: Schema.Types.ObjectId, ref: 'Donor' },
+  bloodRequest: {  
+    type: Schema.Types.ObjectId,
+    ref: 'BloodRequest'
+  },
   date: Date,
 //   status: {
 //     type: String,
